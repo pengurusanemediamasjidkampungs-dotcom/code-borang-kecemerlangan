@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Borang Pendaftaran Multi-Step</title>
   <style>
-    /* style.css - Penggayaan Visual */
     :root {
       --primary: #2563eb;
       --success: #22c55e;
@@ -21,48 +20,30 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      padding: 20px;
     }
 
     .form-container {
       background: white;
-      padding: 30px;
+      padding: 2.5rem;
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 450px;
     }
 
-    .form-step {
-      display: none; /* Dikawal oleh JavaScript */
-    }
+    .form-step { display: none; }
+    .form-step.active { display: block; }
 
-    .form-step.active {
-      display: block;
-      animation: fadeIn 0.3s ease-in-out;
-    }
+    h2 { margin-bottom: 1.5rem; color: #1e293b; font-size: 1.5rem; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-      margin: 0 0 20px 0;
-      color: #1e293b;
-      font-size: 1.5rem;
-      text-align: center;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-    }
+    .input-group { margin-bottom: 1.2rem; }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 0.4rem;
       font-weight: 500;
       color: #475569;
+      font-size: 0.9rem;
     }
 
     input, select, textarea {
@@ -71,19 +52,14 @@
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
       font-size: 1rem;
+      transition: all 0.2s ease;
       box-sizing: border-box;
-      transition: border-color 0.2s, outline 0.2s;
-    }
-
-    input:focus {
-      outline: 2px solid var(--primary);
-      border-color: transparent;
     }
 
     .button-group {
       display: flex;
       justify-content: space-between;
-      margin-top: 30px;
+      margin-top: 2rem;
       gap: 10px;
     }
 
@@ -92,96 +68,80 @@
       padding: 12px;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s, opacity 0.2s;
+      transition: transform 0.1s, opacity 0.2s;
     }
 
-    #btnPrev {
-      background-color: #e2e8f0;
-      color: #475569;
-    }
+    button:active { transform: scale(0.98); }
 
-    #btnNext {
-      background-color: var(--primary);
-      color: white;
-    }
+    #btnPrev { background-color: #cbd5e1; color: #475569; }
+    #btnNext { background-color: var(--primary); color: white; }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
 <div class="form-container">
-  <form id="submissionForm">
+  <form id="mainForm">
     <div class="form-step active">
       <h2>Maklumat Asas 👤</h2>
       <div class="input-group">
-        <label for="nama">Nama Penuh (Wajib)</label>
-        <input type="text" id="nama" name="nama" required placeholder="Masukkan nama penuh">
+        <label>Nama Penuh (Wajib)</label>
+        <input type="text" name="Nama" required placeholder="Ali Bin Abu">
       </div>
       <div class="input-group">
-        <label for="ic">No. Kad Pengenalan (Wajib - 12 Digit)</label>
-        <input type="number" id="ic" name="ic" required placeholder="Contoh: 900101015566">
-      </div>
-    </div>
-
-    <div class="form-step">
-      <h2>Perhubungan 📞</h2>
-      <div class="input-group">
-        <label for="telefon">No. Telefon (Wajib - Min 9 Digit)</label>
-        <input type="number" id="telefon" name="telefon" required placeholder="Contoh: 0123456789">
-      </div>
-      <div class="input-group">
-        <label for="email">E-mel (Pilihan)</label>
-        <input type="email" id="email" name="email" placeholder="Contoh: user@gmail.com">
+        <label>No. Kad Pengenalan (Wajib - 12 Digit)</label>
+        <input type="number" id="ic" name="IC" required placeholder="900101015566">
       </div>
     </div>
 
     <div class="form-step">
-      <h2>Pengesahan ✉️</h2>
+      <h2>Hubungi Kami 📞</h2>
       <div class="input-group">
-        <label for="pilihan">Kategori</label>
-        <select id="pilihan" name="pilihan">
-          <option value="umum">Umum</option>
-          <option value="pelajar">Pelajar</option>
-          <option value="peserta">Peserta Program</option>
-        </select>
+        <label>No. Telefon (Wajib)</label>
+        <input type="number" id="telefon" name="Telefon" required placeholder="0123456789">
       </div>
       <div class="input-group">
-        <label for="catatan">Catatan</label>
-        <textarea id="catatan" name="catatan" rows="3"></textarea>
+        <label>Emel</label>
+        <input type="email" name="Email" placeholder="ali@example.com">
+      </div>
+    </div>
+
+    <div class="form-step">
+      <h2>Pengesahan ✅</h2>
+      <p style="color: #64748b; font-size: 0.9rem;">Sila pastikan semua maklumat adalah betul sebelum menghantar borang ini.</p>
+      <div class="input-group">
+        <label>Catatan</label>
+        <textarea name="Catatan" rows="3"></textarea>
       </div>
     </div>
 
     <div class="button-group">
-      <button type="button" id="btnPrev">Kembali ⬅</button>
-      <button type="button" id="btnNext">Next ➡</button>
+      <button type="button" id="btnPrev" onclick="prev()">Kembali ⬅</button>
+      <button type="button" id="btnNext" onclick="next()">Next ➡</button>
     </div>
   </form>
 </div>
 
 <script>
-  /* script.js - Logik Borang */
-  const scriptURL = 'MASUKKAN_URL_GOOGLE_SCRIPT_ANDA_DI_SINI';
-  const form = document.getElementById('submissionForm');
-  const steps = Array.from(document.querySelectorAll(".form-step"));
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyDo_nNimiTUcuyKNGa0cZyq9WPgSZUMhHUc8HSjZHiym8zZHMAJSCQRDluFTdvm65d/exec';
+  const form = document.getElementById('mainForm');
+  const steps = document.querySelectorAll(".form-step");
   const btnPrev = document.getElementById("btnPrev");
   const btnNext = document.getElementById("btnNext");
   let step = 0;
 
   function showStep() {
     steps.forEach((s, index) => {
-      s.classList.toggle('active', index === step);
+      s.classList.toggle("active", index === step);
     });
 
-    // PEMBETULAN: Pastikan visibiliti butang "Back" diuruskan dengan betul
+    // PEMBETULAN: Logik sorok butang Prev
     btnPrev.style.visibility = (step === 0) ? 'hidden' : 'visible';
 
+    // Tukar teks butang Next
     if (step === steps.length - 1) {
       btnNext.innerText = "Hantar ✅";
     } else {
@@ -193,48 +153,41 @@
     let valid = true;
     let value = el.value.trim();
 
-    // 1. Semak jika wajib tapi kosong
+    // Check required
     if (el.hasAttribute('required') && value === '') {
       valid = false;
-    } 
-    // 2. Semak format jika diisi (walaupun tak wajib)
-    else if (value !== '') {
-      if (el.type === 'number' && isNaN(value)) valid = false;
-      if (el.id === 'ic' && value.length < 12) valid = false; // IC Malaysia biasanya 12 digit
+    } else if (value !== '') {
+      // Check format spesifik
+      if (el.id === 'ic' && value.length !== 12) valid = false;
       if (el.id === 'telefon' && value.length < 9) valid = false;
       if (el.type === 'email' && !value.includes('@')) valid = false;
     }
 
-    // PEMBETULAN: Maklum balas visual yang adil
+    // PEMBETULAN: Visual feedback yang konsisten
     if (!valid) {
-      el.style.outline = '2px solid #ef4444'; // Merah jika ralat
+      el.style.outline = '2px solid var(--error)';
       el.style.borderColor = 'transparent';
     } else if (valid && value !== '') {
-      el.style.outline = '2px solid #22c55e'; // Hijau jika betul
+      el.style.outline = '2px solid var(--success)';
       el.style.borderColor = 'transparent';
     } else {
-      el.style.outline = 'none'; // Neutral jika kosong & tak wajib
+      el.style.outline = 'none';
       el.style.borderColor = '#e2e8f0';
     }
-
     return valid;
   }
 
   function validateStep() {
-    const current = steps[step];
-    const inputs = current.querySelectorAll('input, select, textarea');
+    const currentInputs = steps[step].querySelectorAll('input, select, textarea');
     let stepValid = true;
 
-    inputs.forEach(el => {
+    currentInputs.forEach(el => {
       if (!validateField(el)) stepValid = false;
     });
 
     if (!stepValid) {
-      setTimeout(() => {
-        alert('⚠️ Sila lengkapkan maklumat yang bertanda merah dengan betul.');
-      }, 50);
+      alert('⚠️ Sila betulkan maklumat yang bertanda merah.');
     }
-
     return stepValid;
   }
 
@@ -245,7 +198,7 @@
       step++;
       showStep();
     } else {
-      submitData();
+      submitToGAS();
     }
   }
 
@@ -256,21 +209,21 @@
     }
   }
 
-  function submitData() {
+  function submitToGAS() {
     btnNext.innerText = "Sedang Hantar... ⏳";
     btnNext.disabled = true;
 
     fetch(scriptURL, { method: 'POST', body: new FormData(form) })
       .then(response => {
-        alert('✅ Borang berjaya dihantar!');
+        alert('✅ Tahniah! Data telah berjaya disimpan.');
         form.reset();
         step = 0;
         showStep();
         document.querySelectorAll('input, select, textarea').forEach(el => el.style.outline = 'none');
       })
       .catch(error => {
+        alert('❌ Ralat! Sila cuba lagi atau semak sambungan internet.');
         console.error('Error!', error.message);
-        alert('❌ Ralat berlaku. Sila cuba lagi.');
       })
       .finally(() => {
         btnNext.disabled = false;
@@ -278,15 +231,12 @@
       });
   }
 
-  // Pasang listeners
-  btnNext.addEventListener('click', next);
-  btnPrev.addEventListener('click', prev);
-  
+  // Real-time validation listeners
   document.querySelectorAll('input, select, textarea').forEach(el => {
     el.addEventListener('input', () => validateField(el));
   });
 
-  // Inisialisasi
+  // Init
   showStep();
 </script>
 
