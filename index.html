@@ -1,0 +1,109 @@
+visibility = step === 0 ? 'hidden' : 'visible';
+    if (step === steps.length - 1) {
+      btnNext.innerText = "Hantar ✅";
+    } else {
+      btnNext.innerText = "Next ➡";
+    }
+  }
+
+  // Combined validation function
+  function validateField(el) {
+    let valid = true;
+    let value = el.value.trim();
+
+    if (el.hasAttribute('required') && value === '') {
+      valid = false;
+    } else if (value !== '') {
+      if (el.type === 'number') {
+        if (isNaN(value)) valid = false;
+      }
+      if (el.id === 'ic' && value.length < 10) {
+        valid = false;
+      }
+      if (el.id === 'telefon' && value.length < 9) {
+        valid = false;
+      }
+    }
+
+    // Apply visual feedback
+    if (!valid && el.hasAttribute('required')) {
+      el.style.outline = '2px solid #ef4444';
+    } else if (valid && value !== '') {
+      el.style.outline = '2px solid #22c55e';
+    } else {
+      el.style.outline = 'none'; 
+    }
+
+    return valid;
+  }
+
+  function validateStep() {
+    const current = steps[step];
+    const inputs = current.querySelectorAll('input, select, textarea');
+    let stepValid = true;
+
+    inputs.forEach(el => {
+      if (el.type === 'button') return;
+      if (!validateField(el)) {
+        stepValid = false;
+      }
+    });
+
+    if (!stepValid) {
+      setTimeout(() => {
+        alert('⚠️ Sila lengkapkan semua maklumat yang wajib dengan betul sebelum meneruskan.');
+      }, 50);
+    }
+
+    return stepValid;
+  }
+
+  function next() {
+    const isValid = validateStep();
+    if (!isValid) return;
+
+    if (step < steps.length - 1) {
+      step++;
+      showStep();
+    } else {
+      // Form Submission Logic
+      btnNext.innerText = "Sedang Hantar... ⏳";
+      btnNext.disabled = true;
+
+      fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+        .then(response => {
+          alert('✅ Borang berjaya dihantar!');
+          form.reset();
+          step = 0;
+          showStep();
+          document.querySelectorAll('input, select, textarea').forEach(el => el.style.outline = 'none');
+        })
+        .catch(error => {
+          console.error('Error!', error.message);
+          alert('❌ Ralat berlaku semasa menghantar borang. Sila semak sambungan internet anda dan cuba lagi.');
+        })
+        .finally(() => {
+          btnNext.disabled = false;
+        });
+    }
+  }
+
+  function prev() {
+    if (step > 0) {
+      step--;
+      showStep();
+    }
+  }
+
+  // Attach real-time validation to all inputs
+  const allInputs = document.querySelectorAll('input, select, textarea');
+  allInputs.forEach(el => {
+    el.addEventListener('input', () => validateField(el));
+  });
+
+  // Initialize first step
+  showStep();
+</script>
+
+</body>
+</html>
