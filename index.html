@@ -1,37 +1,208 @@
-visibility = step === 0 ? 'hidden' : 'visible';
-    if (step === steps.length - 1) {
-      btnNext.innerText = "Hantar ✅";
-    } else {
-      btnNext.innerText = "Next ➡";
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borang Multi-Step Moden</title>
+  
+  <style>
+    /* style.css - Penggayaan Moden */
+    :root {
+      --primary: #2563eb;
+      --success: #22c55e;
+      --error: #ef4444;
+      --bg: #f8fafc;
     }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .form-step {
+      display: none; /* Disembunyikan secara default, dikawal oleh JS */
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #1e293b;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    input:focus {
+      outline: 2px solid var(--primary);
+      border-color: transparent;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    #btnPrev {
+      background-color: #94a3b8;
+      color: white;
+    }
+
+    #btnNext {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <form id="multiStepForm">
+    <div class="form-step">
+      <h2>Maklumat Peribadi</h2>
+      <div class="input-group">
+        <label for="nama">Nama Penuh (Wajib)</label>
+        <input type="text" id="nama" name="nama" required placeholder="Contoh: Ali Bin Abu">
+      </div>
+      <div class="input-group">
+        <label for="ic">No. Kad Pengenalan (Wajib - 12 Digit)</label>
+        <input type="number" id="ic" name="ic" required placeholder="Contoh: 950101015566">
+      </div>
+    </div>
+
+    <div class="form-step">
+      <h2>Hubungi Kami</h2>
+      <div class="input-group">
+        <label for="telefon">No. Telefon (Wajib)</label>
+        <input type="number" id="telefon" name="telefon" required placeholder="Contoh: 0123456789">
+      </div>
+      <div class="input-group">
+        <label for="email">Emel (Pilihan)</label>
+        <input type="email" id="email" name="email" placeholder="Contoh: ali@email.com">
+      </div>
+    </div>
+
+    <div class="form-step">
+      <h2>Maklumat Tambahan</h2>
+      <div class="input-group">
+        <label for="negeri">Negeri</label>
+        <select id="negeri" name="negeri">
+          <option value="">-- Sila Pilih --</option>
+          <option value="Selangor">Selangor</option>
+          <option value="Kuala Lumpur">Kuala Lumpur</option>
+          <option value="Johor">Johor</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="mesej">Catatan Tambahan</label>
+        <textarea id="mesej" name="mesej" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="button" id="btnPrev">Kembali</button>
+      <button type="button" id="btnNext">Seterusnya</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  /* script.js - Logik Borang */
+  const scriptURL = 'MASUKKAN_URL_GOOGLE_SCRIPT_ANDA_DI_SINI';
+  const form = document.getElementById('multiStepForm');
+  const steps = Array.from(document.querySelectorAll(".form-step"));
+  const btnPrev = document.getElementById("btnPrev");
+  const btnNext = document.getElementById("btnNext");
+  let step = 0;
+
+  function showStep() {
+    steps.forEach((el, index) => {
+      el.style.display = index === step ? 'block' : 'none';
+    });
+
+    // Urus visibiliti butang Previous
+    btnPrev.style.visibility = step === 0 ? 'hidden' : 'visible';
+
+    // Urus teks butang Next/Hantar
+    btnNext.innerText = step === steps.length - 1 ? "Hantar" : "Seterusnya";
   }
 
-  // Combined validation function
   function validateField(el) {
     let valid = true;
     let value = el.value.trim();
+    const isRequired = el.hasAttribute('required');
 
-    if (el.hasAttribute('required') && value === '') {
+    if (isRequired && value === '') {
       valid = false;
     } else if (value !== '') {
-      if (el.type === 'number') {
-        if (isNaN(value)) valid = false;
-      }
-      if (el.id === 'ic' && value.length < 10) {
+      // Validasi spesifik mengikut ID
+      if (el.id === 'ic' && value.length < 12) {
         valid = false;
       }
       if (el.id === 'telefon' && value.length < 9) {
         valid = false;
       }
+      if (el.type === 'email' && !value.includes('@')) {
+        valid = false;
+      }
     }
 
-    // Apply visual feedback
-    if (!valid && el.hasAttribute('required')) {
+    // Feedback Visual
+    if (!valid) {
       el.style.outline = '2px solid #ef4444';
+      el.style.borderColor = 'transparent';
     } else if (valid && value !== '') {
       el.style.outline = '2px solid #22c55e';
+      el.style.borderColor = 'transparent';
     } else {
-      el.style.outline = 'none'; 
+      el.style.outline = 'none';
+      el.style.borderColor = '#cbd5e1';
     }
 
     return valid;
@@ -43,65 +214,66 @@ visibility = step === 0 ? 'hidden' : 'visible';
     let stepValid = true;
 
     inputs.forEach(el => {
-      if (el.type === 'button') return;
-      if (!validateField(el)) {
-        stepValid = false;
-      }
+      if (!validateField(el)) stepValid = false;
     });
 
     if (!stepValid) {
-      setTimeout(() => {
-        alert('⚠️ Sila lengkapkan semua maklumat yang wajib dengan betul sebelum meneruskan.');
-      }, 50);
+      alert('Sila lengkapkan maklumat dengan betul pada bahagian ini.');
     }
 
     return stepValid;
   }
 
-  function next() {
-    const isValid = validateStep();
-    if (!isValid) return;
+  function handleNext() {
+    if (!validateStep()) return;
 
     if (step < steps.length - 1) {
       step++;
       showStep();
     } else {
-      // Form Submission Logic
-      btnNext.innerText = "Sedang Hantar... ⏳";
-      btnNext.disabled = true;
-
-      fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-        .then(response => {
-          alert('✅ Borang berjaya dihantar!');
-          form.reset();
-          step = 0;
-          showStep();
-          document.querySelectorAll('input, select, textarea').forEach(el => el.style.outline = 'none');
-        })
-        .catch(error => {
-          console.error('Error!', error.message);
-          alert('❌ Ralat berlaku semasa menghantar borang. Sila semak sambungan internet anda dan cuba lagi.');
-        })
-        .finally(() => {
-          btnNext.disabled = false;
-        });
+      submitForm();
     }
   }
 
-  function prev() {
+  function handlePrev() {
     if (step > 0) {
       step--;
       showStep();
     }
   }
 
-  // Attach real-time validation to all inputs
-  const allInputs = document.querySelectorAll('input, select, textarea');
-  allInputs.forEach(el => {
+  function submitForm() {
+    btnNext.innerText = "Sedang Hantar...";
+    btnNext.disabled = true;
+
+    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+      .then(response => {
+        alert('Tahniah! Borang berjaya dihantar.');
+        form.reset();
+        step = 0;
+        showStep();
+        document.querySelectorAll('input, select, textarea').forEach(el => el.style.outline = 'none');
+      })
+      .catch(error => {
+        console.error('Error!', error.message);
+        alert('Ralat berlaku semasa penghantaran.');
+      })
+      .finally(() => {
+        btnNext.disabled = false;
+        btnNext.innerText = "Hantar";
+      });
+  }
+
+  // Event Listeners
+  btnNext.addEventListener('click', handleNext);
+  btnPrev.addEventListener('click', handlePrev);
+  
+  // Real-time validation
+  document.querySelectorAll('input, select, textarea').forEach(el => {
     el.addEventListener('input', () => validateField(el));
   });
 
-  // Initialize first step
+  // Start
   showStep();
 </script>
 
