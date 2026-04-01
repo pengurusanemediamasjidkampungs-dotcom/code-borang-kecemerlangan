@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Borang Pendaftaran Multi-Step</title>
+  <title>Borang Multi-Step Moden</title>
+  
   <style>
     :root {
       --primary: #2563eb;
+      --primary-hover: #1d4ed8;
       --success: #22c55e;
       --error: #ef4444;
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
     }
 
     body {
@@ -20,47 +24,118 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
+      padding: 20px;
     }
 
     .form-container {
       background: white;
       padding: 2.5rem;
       border-radius: 16px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       width: 100%;
-      max-width: 450px;
+      max-width: 550px;
     }
 
-    .form-step { display: none; }
-    .form-step.active { display: block; }
+    /* Progress Bar */
+    .progress-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      position: relative;
+    }
 
-    h2 { margin-bottom: 1.5rem; color: #1e293b; font-size: 1.5rem; }
+    .progress-step {
+      width: 35px;
+      height: 35px;
+      background: #e2e8f0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--text-muted);
+      z-index: 1;
+      transition: 0.3s;
+    }
 
-    .input-group { margin-bottom: 1.2rem; }
+    .progress-step.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .progress-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: 2px;
+      background: #e2e8f0;
+      width: 100%;
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+
+    .form-step {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin: 0 0 1.5rem 0;
+      color: var(--text-main);
+      font-size: 1.5rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.2rem;
+    }
 
     label {
       display: block;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
       font-weight: 500;
-      color: #475569;
+      color: var(--text-main);
       font-size: 0.9rem;
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 12px;
-      border: 1.5px solid #e2e8f0;
+      padding: 12px 16px;
+      border: 1.5px solid #cbd5e1;
       border-radius: 8px;
       font-size: 1rem;
-      transition: all 0.2s ease;
-      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-size: 0.75rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    input.invalid {
+      border-color: var(--error);
     }
 
     .button-group {
       display: flex;
-      justify-content: space-between;
+      gap: 1rem;
       margin-top: 2rem;
-      gap: 10px;
     }
 
     button {
@@ -68,176 +143,206 @@
       padding: 12px;
       border: none;
       border-radius: 8px;
-      font-weight: 600;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.2s;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s;
     }
 
-    button:active { transform: scale(0.98); }
+    #btnPrev {
+      background-color: #f1f5f9;
+      color: #475569;
+    }
 
-    #btnPrev { background-color: #cbd5e1; color: #475569; }
-    #btnNext { background-color: var(--primary); color: white; }
+    #btnPrev:hover {
+      background-color: #e2e8f0;
+    }
 
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #btnNext {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    #btnNext:hover {
+      background-color: var(--primary-hover);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
 
 <div class="form-container">
-  <form id="mainForm">
+  <div class="progress-container">
+    <div class="progress-line"></div>
+    <div class="progress-step active" data-title="Peribadi">1</div>
+    <div class="progress-step" data-title="Hubungi">2</div>
+    <div class="progress-step" data-title="Lain-lain">3</div>
+  </div>
+
+  <form id="multiStepForm">
     <div class="form-step active">
-      <h2>Maklumat Asas 👤</h2>
+      <h2>Maklumat Peribadi</h2>
       <div class="input-group">
-        <label>Nama Penuh (Wajib)</label>
-        <input type="text" name="Nama" required placeholder="Ali Bin Abu">
+        <label for="nama">Nama Penuh (Wajib)</label>
+        <input type="text" id="nama" name="nama" required placeholder="Contoh: Ali Bin Abu">
+        <div class="error-msg">Sila masukkan nama penuh anda.</div>
       </div>
       <div class="input-group">
-        <label>No. Kad Pengenalan (Wajib - 12 Digit)</label>
-        <input type="number" id="ic" name="IC" required placeholder="900101015566">
-      </div>
-    </div>
-
-    <div class="form-step">
-      <h2>Hubungi Kami 📞</h2>
-      <div class="input-group">
-        <label>No. Telefon (Wajib)</label>
-        <input type="number" id="telefon" name="Telefon" required placeholder="0123456789">
-      </div>
-      <div class="input-group">
-        <label>Emel</label>
-        <input type="email" name="Email" placeholder="ali@example.com">
+        <label for="ic">No. Kad Pengenalan (12 Digit)</label>
+        <input type="text" id="ic" name="ic" maxlength="12" inputmode="numeric" required placeholder="Contoh: 950101015566">
+        <div class="error-msg">Sila masukkan 12 digit No. KP yang sah.</div>
       </div>
     </div>
 
     <div class="form-step">
-      <h2>Pengesahan ✅</h2>
-      <p style="color: #64748b; font-size: 0.9rem;">Sila pastikan semua maklumat adalah betul sebelum menghantar borang ini.</p>
+      <h2>Hubungi Kami</h2>
       <div class="input-group">
-        <label>Catatan</label>
-        <textarea name="Catatan" rows="3"></textarea>
+        <label for="telefon">No. Telefon (Wajib)</label>
+        <input type="text" id="telefon" name="telefon" inputmode="tel" required placeholder="Contoh: 0123456789">
+        <div class="error-msg">Sila masukkan no. telefon yang sah.</div>
+      </div>
+      <div class="input-group">
+        <label for="email">Emel (Pilihan)</label>
+        <input type="email" id="email" name="email" placeholder="Contoh: ali@email.com">
+        <div class="error-msg">Format emel tidak sah.</div>
+      </div>
+    </div>
+
+    <div class="form-step">
+      <h2>Maklumat Tambahan</h2>
+      <div class="input-group">
+        <label for="negeri">Negeri</label>
+        <select id="negeri" name="negeri">
+          <option value="">-- Sila Pilih --</option>
+          <option value="Selangor">Selangor</option>
+          <option value="Kuala Lumpur">Kuala Lumpur</option>
+          <option value="Johor">Johor</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="mesej">Catatan Tambahan</label>
+        <textarea id="mesej" name="mesej" rows="3" placeholder="Apa-apa pesanan untuk kami..."></textarea>
       </div>
     </div>
 
     <div class="button-group">
-      <button type="button" id="btnPrev" onclick="prev()">Kembali ⬅</button>
-      <button type="button" id="btnNext" onclick="next()">Next ➡</button>
+      <button type="button" id="btnPrev" style="display: none;">Kembali</button>
+      <button type="button" id="btnNext">Seterusnya</button>
     </div>
   </form>
 </div>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbyDo_nNimiTUcuyKNGa0cZyq9WPgSZUMhHUc8HSjZHiym8zZHMAJSCQRDluFTdvm65d/exec';
-  const form = document.getElementById('mainForm');
+  const scriptURL = 'MASUKKAN_URL_GOOGLE_SCRIPT_ANDA_DI_SINI';
+  const form = document.getElementById('multiStepForm');
   const steps = document.querySelectorAll(".form-step");
+  const progressSteps = document.querySelectorAll(".progress-step");
   const btnPrev = document.getElementById("btnPrev");
   const btnNext = document.getElementById("btnNext");
-  let step = 0;
+  let currentStep = 0;
 
-  function showStep() {
-    steps.forEach((s, index) => {
-      s.classList.toggle("active", index === step);
+  function updateUI() {
+    // Kemaskini Step
+    steps.forEach((s, idx) => {
+      s.classList.toggle("active", idx === currentStep);
     });
 
-    // PEMBETULAN: Logik sorok butang Prev
-    btnPrev.style.visibility = (step === 0) ? 'hidden' : 'visible';
+    // Kemaskini Progress Bar
+    progressSteps.forEach((ps, idx) => {
+      ps.classList.toggle("active", idx <= currentStep);
+    });
 
-    // Tukar teks butang Next
-    if (step === steps.length - 1) {
-      btnNext.innerText = "Hantar ✅";
-    } else {
-      btnNext.innerText = "Next ➡";
-    }
+    // Kemaskini Butang
+    btnPrev.style.display = currentStep === 0 ? 'none' : 'block';
+    btnNext.innerText = currentStep === steps.length - 1 ? "Hantar Borang" : "Seterusnya";
   }
 
-  function validateField(el) {
-    let valid = true;
-    let value = el.value.trim();
+  function validateField(input) {
+    let isValid = true;
+    const errorDisplay = input.parentElement.querySelector('.error-msg');
+    const value = input.value.trim();
 
-    // Check required
-    if (el.hasAttribute('required') && value === '') {
-      valid = false;
+    if (input.hasAttribute('required') && value === '') {
+      isValid = false;
     } else if (value !== '') {
-      // Check format spesifik
-      if (el.id === 'ic' && value.length !== 12) valid = false;
-      if (el.id === 'telefon' && value.length < 9) valid = false;
-      if (el.type === 'email' && !value.includes('@')) valid = false;
+      if (input.id === 'ic') {
+        isValid = /^\d{12}$/.test(value); // Mesti tepat 12 digit
+      } else if (input.id === 'telefon') {
+        isValid = value.length >= 9 && value.length <= 11 && /^\d+$/.test(value);
+      } else if (input.type === 'email') {
+        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
     }
 
-    // PEMBETULAN: Visual feedback yang konsisten
-    if (!valid) {
-      el.style.outline = '2px solid var(--error)';
-      el.style.borderColor = 'transparent';
-    } else if (valid && value !== '') {
-      el.style.outline = '2px solid var(--success)';
-      el.style.borderColor = 'transparent';
+    // Tunjuk/Sembunyi Ralat
+    if (!isValid) {
+      input.classList.add('invalid');
+      if (errorDisplay) errorDisplay.style.display = 'block';
     } else {
-      el.style.outline = 'none';
-      el.style.borderColor = '#e2e8f0';
+      input.classList.remove('invalid');
+      if (errorDisplay) errorDisplay.style.display = 'none';
     }
-    return valid;
+
+    return isValid;
   }
 
-  function validateStep() {
-    const currentInputs = steps[step].querySelectorAll('input, select, textarea');
-    let stepValid = true;
+  btnNext.addEventListener('click', () => {
+    const currentInputs = steps[currentStep].querySelectorAll('input, select, textarea');
+    let isStepValid = true;
 
-    currentInputs.forEach(el => {
-      if (!validateField(el)) stepValid = false;
+    currentInputs.forEach(input => {
+      if (!validateField(input)) isStepValid = false;
     });
 
-    if (!stepValid) {
-      alert('⚠️ Sila betulkan maklumat yang bertanda merah.');
+    if (isStepValid) {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateUI();
+      } else {
+        submitForm();
+      }
     }
-    return stepValid;
-  }
+  });
 
-  function next() {
-    if (!validateStep()) return;
-
-    if (step < steps.length - 1) {
-      step++;
-      showStep();
-    } else {
-      submitToGAS();
+  btnPrev.addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateUI();
     }
-  }
+  });
 
-  function prev() {
-    if (step > 0) {
-      step--;
-      showStep();
-    }
-  }
+  // Real-time validation semasa menaip
+  form.querySelectorAll('input, select, textarea').forEach(input => {
+    input.addEventListener('blur', () => validateField(input));
+    input.addEventListener('input', () => {
+      if (input.classList.contains('invalid')) validateField(input);
+    });
+  });
 
-  function submitToGAS() {
-    btnNext.innerText = "Sedang Hantar... ⏳";
+  function submitForm() {
+    btnNext.innerText = "Memproses...";
     btnNext.disabled = true;
 
     fetch(scriptURL, { method: 'POST', body: new FormData(form) })
       .then(response => {
-        alert('✅ Tahniah! Data telah berjaya disimpan.');
+        alert('Terima kasih! Maklumat anda telah berjaya dihantar.');
         form.reset();
-        step = 0;
-        showStep();
-        document.querySelectorAll('input, select, textarea').forEach(el => el.style.outline = 'none');
+        currentStep = 0;
+        updateUI();
       })
       .catch(error => {
-        alert('❌ Ralat! Sila cuba lagi atau semak sambungan internet.');
+        alert('Maaf, ralat berlaku. Sila cuba sebentar lagi.');
         console.error('Error!', error.message);
       })
       .finally(() => {
         btnNext.disabled = false;
-        btnNext.innerText = "Hantar ✅";
+        btnNext.innerText = "Hantar Borang";
       });
   }
-
-  // Real-time validation listeners
-  document.querySelectorAll('input, select, textarea').forEach(el => {
-    el.addEventListener('input', () => validateField(el));
-  });
-
-  // Init
-  showStep();
 </script>
 
 </body>
